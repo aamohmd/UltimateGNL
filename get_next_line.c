@@ -6,7 +6,7 @@
 /*   By: aamohame <aamohame@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 17:32:33 by aamohame          #+#    #+#             */
-/*   Updated: 2024/01/17 13:16:16 by aamohame         ###   ########.fr       */
+/*   Updated: 2024/01/17 20:50:17 by aamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,6 @@ char	*ft_substr(char *s, size_t start, size_t len)
 
 	if (!s)
 		return (NULL);
-	if (start >= ft_strlen(s))
-		return (ft_strdup(""));
-	if (start + len > ft_strlen(s))
-		len = ft_strlen(s) - start;
 	str = (char *)malloc(len + 1);
 	if (str == NULL)
 		return (NULL);
@@ -36,60 +32,13 @@ char	*ft_substr(char *s, size_t start, size_t len)
 	return (str);
 }
 
-char	*static_new_line(char **remainder)
+char	*static_new_line(char **remainder, char **line)
 {
-	char	*temp;
-	size_t	i;
+	int	i;
 
-	i = 0;
-	while ((*remainder)[i] != '\n')
-	{
-		i++;
-	}
-	temp = ft_substr(*remainder, 0, i + 1);
+	i = is_there(*remainder, '\n');
+	*line = ft_substr(*remainder, 0, i);
 	*remainder = ft_substr(*remainder, i + 1, ft_strlen(*remainder) - i);
-	return (temp);
-}
-
-char	*new_line(char *line, char *buffer)
-{
-	char	*str;
-	int		i;
-
-	i = 0;
-	while (buffer[i] != '\0')
-	{
-		if (buffer[i] == '\n')
-		{
-			if (buffer[i + 1] != '\0')
-				buffer[i + 1] = '\0';
-			str = ft_strjoin(line, buffer);
-			if (str == NULL)
-			return (str);
-		}
-		i++;
-	}
-	str = ft_strjoin(line, buffer);
-	return (str);
-}
-
-char	*process_buffer(char *buffer, char **remainder)
-{
-	char	*temp;
-
-	if (is_there(buffer, '\n') == 1)
-	{
-		temp = ft_strchr(buffer, '\n');
-		buffer = new_line(buffer, *remainder);
-		if (temp != NULL)
-			*remainder = temp + 1;
-		return (buffer);
-	}
-	else
-	{
-		*remainder = new_line(buffer, *remainder);
-		return (NULL);
-	}
 }
 
 char	*get_next_line(int fd)
@@ -112,10 +61,9 @@ char	*get_next_line(int fd)
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		buffer[bytes_read] = '\0';
 		remainder = ft_strjoin(remainder, buffer);
-		if (is_there(remainder, '\n') == 1)
+		if (is_there(remainder, '\n') > 0)
 		{
-			free(buffer);
-			line = static_new_line(&remainder);
+			static_new_line(&remainder, &line);
 			return (line);
 		}
 	}

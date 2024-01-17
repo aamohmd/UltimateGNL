@@ -6,7 +6,7 @@
 /*   By: aamohame <aamohame@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 17:34:36 by aamohame          #+#    #+#             */
-/*   Updated: 2024/01/17 10:45:48 by aamohame         ###   ########.fr       */
+/*   Updated: 2024/01/17 20:45:58 by aamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	is_there(char *str, char c)
 	{
 		if (str[i] == c)
 		{
-			return (1);
+			return (i);
 		}
 		i++;
 	}
