@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aamohame <aamohame@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/10 17:32:33 by aamohame          #+#    #+#             */
-/*   Updated: 2024/02/11 11:16:01 by aamohame         ###   ########.fr       */
+/*   Created: 2024/01/20 11:42:37 by aamohame          #+#    #+#             */
+/*   Updated: 2024/02/11 11:20:03 by aamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_substr(char *s, size_t start, size_t len, int free_s)
 {
@@ -47,7 +47,7 @@ int	ft_reader(int fd, char **buffer)
 	return (bytes_read);
 }
 
-void	static_new_line(char **remainder, char **line)
+void	line(char **remainder, char **line)
 {
 	int	i;
 
@@ -58,29 +58,29 @@ void	static_new_line(char **remainder, char **line)
 
 char	*get_next_line(int fd)
 {
-	static char	*remainder;
-	char		*buffer;
-	char		*line;
-	ssize_t		bytes_read;
+	static char	*rem[OPEN_MAX];
+	t_va		var;
 
-	if (fd < 0 || read(fd, NULL, 0) < 0 || BUFFER_SIZE <= 0)
-		return (free(remainder), remainder = NULL, NULL);
-	buffer = (char *)malloc(BUFFER_SIZE + 1);
-	if (buffer == NULL)
+	if (fd < 0)
 		return (NULL);
-	bytes_read = 1;
-	if (remainder == NULL)
-		remainder = ft_strdup("");
-	while (bytes_read > 0)
+	if (fd < 0 || read(fd, NULL, 0) < 0 || BUFFER_SIZE <= 0 || fd > OPEN_MAX)
+		return (free(rem[fd]), rem[fd] = NULL, NULL);
+	var.buffer = (char *)malloc(BUFFER_SIZE + 1);
+	if (var.buffer == NULL)
+		return (NULL);
+	var.bytes_read = 1;
+	if (rem[fd] == NULL)
+		rem[fd] = ft_strdup("");
+	while (var.bytes_read > 0)
 	{
-		bytes_read = ft_reader(fd, &buffer);
-		if (bytes_read < 0 || remainder == NULL)
-			return (free(buffer), free(remainder), remainder = NULL, NULL);
-		remainder = ft_strjoin(remainder, buffer);
-		if (remainder != NULL && is_there(remainder, '\n') >= 0)
-			return (static_new_line(&remainder, &line), free(buffer), line);
+		var.bytes_read = ft_reader(fd, &(var.buffer));
+		if (var.bytes_read < 0 || rem[fd] == NULL)
+			return (free(var.buffer), free(rem[fd]), rem[fd] = NULL, NULL);
+		rem[fd] = ft_strjoin(rem[fd], var.buffer);
+		if (rem[fd] != NULL && is_there(rem[fd], '\n') >= 0)
+			return (line(&rem[fd], &(var.line)), free(var.buffer), var.line);
 	}
-	if (remainder != NULL && remainder[0] != '\0')
-		return (line = remainder, remainder = NULL, free(buffer), line);
-	return (free(buffer), free(remainder), remainder = NULL, NULL);
+	if (rem[fd] != NULL && rem[fd][0] != '\0')
+		return (var.line = rem[fd], rem[fd] = NULL, free(var.buffer), var.line);
+	return (free(var.buffer), free(rem[fd]), rem[fd] = NULL, NULL);
 }
