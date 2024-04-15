@@ -6,21 +6,21 @@
 /*   By: aamohame <aamohame@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 17:32:33 by aamohame          #+#    #+#             */
-/*   Updated: 2024/02/11 11:16:01 by aamohame         ###   ########.fr       */
+/*   Updated: 2024/04/15 10:04:28 by aamohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_substr(char *s, size_t start, size_t len, int free_s)
+char	*ft_substr_gnl(char *s, size_t start, size_t len, int free_s)
 {
 	char	*str;
 	size_t	i;
 
 	if (!s)
 		return (NULL);
-	if (start + len > ft_strlen(s))
-		len = ft_strlen(s) - start;
+	if (start + len > ft_strlen_gnl(s))
+		len = ft_strlen_gnl(s) - start;
 	str = (char *)malloc(len + 1);
 	if (str == NULL)
 		return (NULL);
@@ -52,8 +52,8 @@ void	static_new_line(char **remainder, char **line)
 	int	i;
 
 	i = is_there(*remainder, '\n');
-	*line = ft_substr(*remainder, 0, i + 1, 0);
-	*remainder = ft_substr(*remainder, i + 1, ft_strlen(*remainder), 1);
+	*line = ft_substr_gnl(*remainder, 0, i + 1, 0);
+	*remainder = ft_substr_gnl(*remainder, i + 1, ft_strlen_gnl(*remainder), 1);
 }
 
 char	*get_next_line(int fd)
@@ -70,13 +70,13 @@ char	*get_next_line(int fd)
 		return (NULL);
 	bytes_read = 1;
 	if (remainder == NULL)
-		remainder = ft_strdup("");
+		remainder = ft_strdup_gnl("");
 	while (bytes_read > 0)
 	{
 		bytes_read = ft_reader(fd, &buffer);
 		if (bytes_read < 0 || remainder == NULL)
 			return (free(buffer), free(remainder), remainder = NULL, NULL);
-		remainder = ft_strjoin(remainder, buffer);
+		remainder = ft_strjoin_gnl(remainder, buffer);
 		if (remainder != NULL && is_there(remainder, '\n') >= 0)
 			return (static_new_line(&remainder, &line), free(buffer), line);
 	}
